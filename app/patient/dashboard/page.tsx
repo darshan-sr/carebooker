@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-const page = () => {
+const PatientDashboard = () => {
   const router = useRouter();
   const [user, setUser] = React.useState<any>(null);
 
@@ -23,4 +23,4 @@ const page = () => {
   return <div className="text-xl">{user?.email}</div>;
 };
 
-export default page;
+export default PatientDashboard;
