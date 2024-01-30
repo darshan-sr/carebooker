@@ -44,14 +44,12 @@ const PatientSignupPage = () => {
     }
 
     // Sign up user using email and password
-    const {
-      user,
-      session,
-      error: signUpError,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp(
+      {
+        email,
+        password,
+      }
+    );
 
     if (signUpError) {
       console.error("Error signing up user:", signUpError.message);
@@ -59,7 +57,7 @@ const PatientSignupPage = () => {
       return;
     }
 
-    console.log("User signed up successfully:", user);
+    console.log("User signed up successfully:", signUpData);
 
     // Sign in user using email and password
     const { data: signInData, error: signInError } =

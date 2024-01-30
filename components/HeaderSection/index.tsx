@@ -97,7 +97,7 @@ const HeaderSection = () => {
                     >
                       <li>
                         <Link
-                          href="/patient/registration"
+                          href="/patient/auth/registration"
                           className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                         >
                           Registration
@@ -105,7 +105,7 @@ const HeaderSection = () => {
                       </li>
                       <li>
                         <a
-                          href="/patient/signin"
+                          href="/patient/auth/signin"
                           className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                         >
                           Login
