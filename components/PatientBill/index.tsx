@@ -24,8 +24,10 @@ import {
   chakra,
   IconButton,
 } from "@chakra-ui/react";
+import ReactPDF from "@react-pdf/renderer";
 import { FaFileAlt } from "react-icons/fa"; // Use FaFileAlt for a document icon
 import supabase from "@/utils/supabase";
+import BillPdf from "./BillPdf";
 
 // Define the component
 const PatientViewBills: React.FC = () => {
@@ -164,7 +166,59 @@ const PatientViewBills: React.FC = () => {
       </div>
       {/* Chakra UI Modal for Show Bill */}
       <Modal isOpen={isOpen} onClose={onClose}>
-        {/* ... (rest of the Modal content) */}
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Bill Details</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={4}>
+              <FormControl id="dueDate">
+                <FormLabel>Due Date</FormLabel>
+                <Input
+                  type="text"
+                  value={formData.dueDate}
+                  isReadOnly
+                  variant="filled"
+                />
+              </FormControl>
+              <FormControl id="items">
+                <FormLabel>Items</FormLabel>
+                <Table>
+                  <Thead>
+                    <Tr>
+                      <Th>Item</Th>
+                      <Th>Amount</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {formData.items.map((item, index) => (
+                      <Tr key={index}>
+                        <Td>{item.item}</Td>
+                        <Td>{item.amount}</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                  <Tbody>
+                    <Tr>
+                      <Td className="font-semibold">Total</Td>
+                      <Td className="font-semibold">
+                        {formData.items.reduce(
+                          (total, item) => total + item.amount,
+                          0
+                        )}
+                      </Td>
+                    </Tr>
+                  </Tbody>
+                </Table>
+              </FormControl>
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     </div>
   );

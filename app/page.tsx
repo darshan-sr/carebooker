@@ -9,7 +9,6 @@ const page = () => {
     <>
       <HeaderSection />
       <HeroSection />
-      <FeatureSection />
       <FooterSection />
     </>
   );
