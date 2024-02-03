@@ -149,17 +149,17 @@ const HeaderSection = () => {
                       className="py-2 text-sm text-gray-700 dark:text-gray-400"
                       aria-labelledby="dropdownLargeButton"
                     >
-                      <li>
+                      {/* <li>
                         <a
                           href="#"
                           className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                         >
                           Registration
                         </a>
-                      </li>
+                      </li> */}
                       <li>
                         <a
-                          href="#"
+                          href="/doctor/auth/signin"
                           className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                         >
                           Login
@@ -168,6 +168,14 @@ const HeaderSection = () => {
                     </ul>
                   </div>
                 )}
+              </li>
+              <li>
+                <a
+                  href="/admin/auth/signin"
+                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                >
+                  Admin
+                </a>
               </li>
               <li>
                 <a

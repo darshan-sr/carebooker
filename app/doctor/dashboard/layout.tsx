@@ -30,7 +30,7 @@ export default function DashboardLayout({
       return;
     }
     localStorage.clear();
-    router.push("/patient/auth/signin");
+    router.push("/Doctor/auth/signin");
   };
 
   useEffect(() => {
@@ -46,25 +46,25 @@ export default function DashboardLayout({
         const userEmail = user.email;
 
         if (userEmail) {
-          // Query the 'patient' table for the user's email
-          const { data: patientData, error: patientError } = await supabase
-            .from("patient")
+          // Query the 'Doctor' table for the user's email
+          const { data: DoctorData, error: DoctorError } = await supabase
+            .from("doctor")
             .select("*")
             .eq("email", userEmail);
 
-          if (patientError) {
-            console.error("Error fetching patient data:", patientError.message);
+          if (DoctorError) {
+            console.error("Error fetching Doctor data:", DoctorError.message);
             return;
           }
 
-          if (patientData && patientData.length > 0) {
-            // If patient data is found, log it or do something with it
-            console.log("Patient data:", patientData[0]);
-            setUserDetails(patientData[0]);
-            // You may want to set the patient data to the state or perform other actions
+          if (DoctorData && DoctorData.length > 0) {
+            // If Doctor data is found, log it or do something with it
+            console.log("Doctor data:", DoctorData[0]);
+            setUserDetails(DoctorData[0]);
+            // You may want to set the Doctor data to the state or perform other actions
           } else {
-            console.log("Patient data not found.");
-            // Handle the case where no patient data is found for the user's email
+            console.log("Doctor data not found.");
+            // Handle the case where no Doctor data is found for the user's email
           }
         }
       }
@@ -96,7 +96,7 @@ export default function DashboardLayout({
           </a>
           <div className="w-full flex flex-col items-center justify-center ">
             <span className="self-center border-b border-gray-200 pb-4 w-full flex justify-center  text-md font-semibold text-blue-600 my-6 whitespace-nowrap dark:text-white">
-              Patient Dashboard
+              Doctor Dashboard
             </span>
             <a
               href="#"
@@ -114,8 +114,8 @@ export default function DashboardLayout({
               <h5 className="mb-2 text-xl text-center w-full font-bold tracking-tight text-gray-900 dark:text-white">
                 {userDetails?.name}
               </h5>
-              <p className="font-semibold text-gray-700  dark:text-gray-400">
-                Patient Details:
+              <p className="font-semibold text-gray-700 text-sm  dark:text-gray-400">
+                Your Details:
               </p>
               <p className="font-normal flex flex-row text-sm text-gray-700 dark:text-gray-400">
                 <span className="font-semibold text-blue-600">Email: </span>
@@ -123,17 +123,17 @@ export default function DashboardLayout({
               </p>
               <p className="font-normal flex flex-row text-sm text-gray-700 dark:text-gray-400">
                 <span className="font-semibold text-blue-600">Phone: </span>
-                {" " + userDetails?.contact_number}
+                {" " + userDetails?.contact_no}
+              </p>
+              <p className="font-normal flex flex-row text-sm text-gray-700 dark:text-gray-400">
+                <span className="font-semibold text-blue-600">Doctor ID: </span>
+                {"DOC" + userDetails?.doctor_id}
               </p>
               <p className="font-normal flex flex-row text-sm text-gray-700 dark:text-gray-400">
                 <span className="font-semibold text-blue-600">
-                  Patient ID:{" "}
+                  Specialization:
                 </span>
-                {"CREBK0" + userDetails?.id}
-              </p>
-              <p className="font-normal flex flex-row text-sm text-gray-700 dark:text-gray-400">
-                <span className="font-semibold text-blue-600">Address: </span>
-                {"CREBK0" + userDetails?.address}
+                {userDetails?.specialization}
               </p>
             </a>
           </div>

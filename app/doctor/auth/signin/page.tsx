@@ -1,13 +1,10 @@
 "use client";
 import HeaderSection from "@/components/HeaderSection";
 import React, { useEffect } from "react";
-import { Datepicker } from "flowbite-react";
 import supabase from "@/utils/supabase";
-import { sign } from "crypto";
 import { useRouter } from "next/navigation";
-import { type } from "os";
 
-const PatientSignInPage = () => {
+const DoctorSignInPage = () => {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
@@ -24,19 +21,19 @@ const PatientSignInPage = () => {
     setIsLoading(true);
 
     // Check if patient email exists in the 'patient' table
-    const { data: patientData, error: patientError } = await supabase
-      .from("patient")
+    const { data: doctorData, error: DoctorError } = await supabase
+      .from("doctor")
       .select("email")
       .eq("email", email);
 
-    if (patientError) {
+    if (DoctorError) {
       setError("No Records found");
       setIsLoading(false);
       return;
     }
-    console.log(patientData);
+    console.log(doctorData);
     // If patient email doesn't exist, handle the situation accordingly
-    if (!patientData || patientData.length === 0) {
+    if (!doctorData || doctorData.length === 0) {
       setError("Invalid Records");
       setIsLoading(false);
       // You might want to display an error message to the user or take some other action.
@@ -58,10 +55,10 @@ const PatientSignInPage = () => {
       console.log("User signed in successfully:", signInData);
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(signInData));
-        localStorage.setItem("userType", "patient");
+        localStorage.setItem("userType", "doctor");
       }
       setIsLoading(false);
-      router.push("/patient/dashboard");
+      router.push("/doctor/dashboard");
     }
   };
 
@@ -74,7 +71,7 @@ const PatientSignInPage = () => {
         onSubmit={handleSubmit}
       >
         <h4 className="block my-5 text-lg w-full text-center font-semibold  text-blue-600 dark:text-white ">
-          Patient Login
+          Doctor Login
         </h4>
 
         <div className="mb-5">
@@ -164,4 +161,4 @@ const PatientSignInPage = () => {
   );
 };
 
-export default PatientSignInPage;
+export default DoctorSignInPage;

@@ -3,9 +3,7 @@ import HeaderSection from "@/components/HeaderSection";
 import React, { useEffect } from "react";
 import { Datepicker } from "flowbite-react";
 import supabase from "@/utils/supabase";
-import { sign } from "crypto";
 import { useRouter } from "next/navigation";
-import { type } from "os";
 
 const PatientSignInPage = () => {
   const [email, setEmail] = React.useState<string>("");
@@ -22,21 +20,21 @@ const PatientSignInPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-
+    setError("");
     // Check if patient email exists in the 'patient' table
-    const { data: patientData, error: patientError } = await supabase
-      .from("patient")
-      .select("email")
-      .eq("email", email);
 
-    if (patientError) {
+    let { data: adminUser, error: adminError } = await supabase
+      .from("admin_users")
+      .select("*");
+
+    if (adminError) {
       setError("No Records found");
       setIsLoading(false);
       return;
     }
-    console.log(patientData);
+    console.log(adminUser);
     // If patient email doesn't exist, handle the situation accordingly
-    if (!patientData || patientData.length === 0) {
+    if (!adminUser || adminUser.length === 0) {
       setError("Invalid Records");
       setIsLoading(false);
       // You might want to display an error message to the user or take some other action.
@@ -58,10 +56,10 @@ const PatientSignInPage = () => {
       console.log("User signed in successfully:", signInData);
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(signInData));
-        localStorage.setItem("userType", "patient");
+        localStorage.setItem("userType", "admin");
       }
       setIsLoading(false);
-      router.push("/patient/dashboard");
+      router.push("/admin/dashboard");
     }
   };
 
@@ -74,7 +72,7 @@ const PatientSignInPage = () => {
         onSubmit={handleSubmit}
       >
         <h4 className="block my-5 text-lg w-full text-center font-semibold  text-blue-600 dark:text-white ">
-          Patient Login
+          Admin Login
         </h4>
 
         <div className="mb-5">
