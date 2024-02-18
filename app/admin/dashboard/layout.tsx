@@ -27,10 +27,10 @@ export default function DashboardLayout({
   const isActive = (path: string) => currentPath === path;
 
   return (
-    <div className="flex flex-row ">
+    <div className="flex flex-row  ">
       <aside
         id="default-sidebar"
-        className=" top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+        className=" top-0 left-0 fixed z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidenav"
       >
         <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -48,6 +48,18 @@ export default function DashboardLayout({
             </span>
           </a>
           <ul className="space-y-2">
+            <li>
+              <a
+                href="/admin/dashboard/analytics"
+                className={`flex items-center p-2 text-base font-normal rounded-lg group ${
+                  isActive("/admin/dashboard/analytics")
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-900"
+                } dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700`}
+              >
+                <span className="ml-3">View Analytics</span>
+              </a>
+            </li>
             <li>
               <a
                 href="/admin/dashboard"
@@ -122,7 +134,7 @@ export default function DashboardLayout({
           </a>
         </div>
       </aside>
-      <section>{children}</section>
+      <section className="md:ml-64">{children}</section>
     </div>
   );
 }

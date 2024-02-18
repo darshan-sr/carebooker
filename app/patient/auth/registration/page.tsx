@@ -3,7 +3,6 @@ import HeaderSection from "@/components/HeaderSection";
 import React, { useEffect } from "react";
 import { Datepicker } from "flowbite-react";
 import supabase from "@/utils/supabase";
-import { sign } from "crypto";
 import { useRouter } from "next/navigation";
 
 const PatientSignupPage = () => {
@@ -78,6 +77,10 @@ const PatientSignupPage = () => {
 
     // Optionally, you can do something with the user or redirect to another page.
   };
+
+  useEffect(() => {
+    console.log(name);
+  }, [name]);
 
   return (
     <>
