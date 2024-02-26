@@ -2,6 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import supabase from "@/utils/supabase";
+import { Modal, Rate } from "antd";
 
 interface Appointment {
   appointment_id: number;
@@ -10,12 +11,18 @@ interface Appointment {
   appointment_status: string;
   appointment_date: string;
   appointment_time: string;
+  doctor_id: number;
 }
 
 const PatientPastAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isDataFetching, setIsDataFetching] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<any>();
+
+  const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [reviewRating, setReviewRating] = useState<number>(0);
+  const [reviewText, setReviewText] = useState<string>("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -65,6 +72,7 @@ const PatientPastAppointments: React.FC = () => {
         .from("appointment")
         .select("*")
         .eq("patient_id", patientId)
+        .eq("appointment_status", "confirmed")
         .lte("appointment_date", new Date().toISOString()) // Get upcoming appointments
         .order("appointment_date", { ascending: true, nullsFirst: false });
 
@@ -85,6 +93,41 @@ const PatientPastAppointments: React.FC = () => {
   useEffect(() => {
     fetchAppointments();
   }, [userDetails]);
+
+  const showReviewModal = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setReviewModalVisible(true);
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!selectedAppointment || !userDetails) return;
+
+    try {
+      const { data, error } = await supabase.from("doctor_ratings").insert([
+        {
+          doctor_id: selectedAppointment.doctor_id,
+          patient_id: userDetails.id,
+          stars: reviewRating,
+          review: reviewText,
+        },
+      ]);
+
+      if (error) {
+        console.error("Error inserting review:", error.message);
+        return;
+      }
+
+      console.log("Review submitted successfully:", data);
+
+      // Close modal and reset state
+      setReviewModalVisible(false);
+      setReviewRating(0);
+      setReviewText("");
+    } catch (error: any) {
+      console.error("Error inserting review:", error.message);
+    }
+  };
+
 
   const handleUpdateAppointment = async (appointmentId: number) => {
     // Implement your logic to update the appointment
@@ -115,7 +158,7 @@ const PatientPastAppointments: React.FC = () => {
   return (
     <div className="w-full flex items-center justify-center flex-col">
       <h2 className="text-md text-gray-700 font-bold m-4">
-        Current Appointments
+        Past Appointments
       </h2>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -128,9 +171,6 @@ const PatientPastAppointments: React.FC = () => {
                 Specialization
               </th>
               <th scope="col" className="px-6 py-3">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3">
                 Date
               </th>
               <th scope="col" className="px-6 py-3">
@@ -139,6 +179,7 @@ const PatientPastAppointments: React.FC = () => {
               <th scope="col" className="px-6 py-3">
                 Actions
               </th>
+             
             </tr>
           </thead>
           <tbody>
@@ -154,47 +195,47 @@ const PatientPastAppointments: React.FC = () => {
                   {appointment.doctor_name}
                 </td>
                 <td className="px-6 py-4">{appointment.specialization}</td>
-                <td className="px-6 py-4 ">
-                  <p
-                    className={`p-1 rounded flex flex-row items-center justify-center px-4 ${
-                      appointment.appointment_status === "confirmed"
-                        ? "bg-green-100"
-                        : appointment.appointment_status === "pending"
-                        ? "bg-yellow-100"
-                        : "bg-red-100"
-                    }`}
-                  >
-                    <span
-                      className={`flex w-3 h-3 me-3 rounded-full ${
-                        appointment.appointment_status === "confirmed"
-                          ? "bg-green-500"
-                          : appointment.appointment_status === "pending"
-                          ? "bg-yellow-300"
-                          : "bg-red-500"
-                      }`}
-                    ></span>
-                    {appointment.appointment_status}
-                  </p>
-                </td>
+             
                 <td className="px-6 py-4">{appointment.appointment_date}</td>
                 <td className="px-6 py-4">
                   {formatTimeToAMPM(appointment.appointment_time)}
                 </td>
+
                 <td className="px-6 py-4">
                   <button
-                    className="text-red-700 hover:text-white border border-red-500 hover:bg-red-500 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 text-center me-1 mb-1 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-                    onClick={() =>
-                      handleDeleteAppointment(appointment.appointment_id)
-                    }
+                    className="text-blue-600 hover:underline"
+                    onClick={() => showReviewModal(appointment)}
                   >
-                    Cancel appointment
+                    Review
                   </button>
                 </td>
+                
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <Modal
+        title="Write a Review"
+        visible={reviewModalVisible}
+        onCancel={() => setReviewModalVisible(false)}
+        onOk={handleReviewSubmit}
+      >
+        {/* Rating */}
+        <div className="mb-4">
+          <span>Rating:</span>
+          <Rate value={reviewRating} onChange={(value) => setReviewRating(value)} />
+        </div>
+        {/* Review Text */}
+        <div className="mb-4">
+          <span>Review:</span>
+          <textarea
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            className="w-full h-24 border rounded-md"
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

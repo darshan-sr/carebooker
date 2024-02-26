@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import supabase from "@/utils/supabase";
+import { Rate } from "antd";
+
 
 interface Doctor {
   doctor_id: number;
@@ -20,6 +22,8 @@ const AppointmentForm: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [step, setStep] = useState<number>(1);
   const [userDetails, setUserDetails] = useState<any>(null);
+  const [doctorRatings, setDoctorRatings] = useState<{ [key: number]: number }>({});
+
 
   useEffect(() => {
     const getUser = async () => {
@@ -59,6 +63,47 @@ const AppointmentForm: React.FC = () => {
 
     getUser();
   }, []);
+
+  useEffect(() => {
+    const fetchDoctorRatings = async () => {
+      try {
+        const { data: allDoctorRatings, error } = await supabase
+          .from("doctor_ratings")
+          .select("doctor_id, stars");
+    
+        if (error) {
+          console.error("Error fetching doctor ratings:", error.message);
+          return;
+        }
+    
+        const ratingsMap: { [key: number]: { sum: number; count: number } } = {};
+    
+        allDoctorRatings?.forEach((rating: any) => {
+          if (!ratingsMap[rating.doctor_id]) {
+            ratingsMap[rating.doctor_id] = { sum: 0, count: 0 };
+          }
+          ratingsMap[rating.doctor_id].sum += rating.stars;
+          ratingsMap[rating.doctor_id].count++;
+        });
+    
+        const averageRatings: { [key: number]: number } = {};
+    
+        Object.keys(ratingsMap).forEach((doctorId) => {
+          const sum = ratingsMap[doctorId].sum;
+          const count = ratingsMap[doctorId].count;
+          averageRatings[doctorId] = sum / count;
+        });
+    
+        setDoctorRatings(averageRatings);
+      } catch (error: any) {
+        console.error("Error fetching doctor ratings:", error.message);
+      }
+    };
+    
+
+    fetchDoctorRatings();
+  }, []);
+
 
   const handleSpecializationChange = async (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -313,6 +358,26 @@ const AppointmentForm: React.FC = () => {
                     </p>
 
                     <p className="text-gray-600">Email: {doctor.email}</p>
+
+                  {doctorRatings[doctor.doctor_id] ? (
+                    <>
+                    <Rate
+                    defaultValue={doctorRatings[doctor.doctor_id]}
+                    disabled
+                    className="ant-rate-disabled ant-rate-star"
+                    character={({ index }) => {
+                      return doctorRatings[doctor.doctor_id] && index < doctorRatings[doctor.doctor_id]
+                        ? "\u2605" // Full star
+                        : "\u2606"; // Empty star
+                    }}
+                    style={{ color: "#fadb14" }} // Yellow color
+                  />
+                  
+                    
+                    </>
+                
+                  ) : <p className="text-gray-600" >no ratings</p>}
+                    
                   </div>
                 ))}
               </div>
